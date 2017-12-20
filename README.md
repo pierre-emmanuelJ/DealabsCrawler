@@ -22,3 +22,8 @@ Put your sender mail and password with good dealabs URL
 * !! TODO implement mailingList.txt use by program !!
 * Currently you have to add your mail recievers in the /mail/sendMail.go file
 
+* Then just run with this command:
+```
+docker-compose up
+```
+
