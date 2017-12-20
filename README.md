@@ -18,7 +18,7 @@ environment:
       DEALABS_MAIL_SENDER: exemple@gmail.com
       DEALABS_MAIL_SENDER_PASSWORD: PasswordExemple
 ```
-Put your sender mail and password with good dealabs URL
+Put your sender mail and password and the good dealabs URL
 * !! TODO implement mailingList.txt use by program !!
 * Currently you have to add your mail recievers in the /mail/sendMail.go file
 
