@@ -6,12 +6,20 @@ DealabsCrawler is a crawler to have lasted comment by mail in this forum topic:
 
 When a new comment appear you recieve an email with formmated comment in HTML.
 
+## Prerequisites
 
-### How to run it:
+ - Make sure you have `docker` and `docker-compose` installed
+
+## How to run it:
 
 * First edit docker-compose.yml
 
-Put the good dealabs URL and mailinglist path file
+Put the good info:
+- Dealabs URL
+- Mailinglist path file
+- Hostname of your mail provider
+- Hostname port of your mail provider
+- ### Make sure you have disabled secure login of your mail provider
 ```
 environment:
       DEALABS_URL: https://www.dealabs.com/discussions/le-topic-des-erreurs-de-prix-1056379?page=9999
