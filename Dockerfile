@@ -9,4 +9,5 @@ FROM alpine:3.6
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=0  /go/src/github.com/pierre-emmanuelJ/DealabsCrawler/dealabscrawler .
-CMD ["./dealabscrawler"]
+COPY --from=0  /go/src/github.com/pierre-emmanuelJ/DealabsCrawler/mailinglist.txt .
+CMD ["./dealabscrawler", "--sender-mail", "test@gmail.com", "--sender-mail-password", "password"]

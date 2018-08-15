@@ -10,5 +10,4 @@ services:
       DEALABS_URL: https://www.dealabs.com/discussions/le-topic-des-erreurs-de-prix-1056379?page=9999
       DEALABS_HOSTNAME: smtp.gmail.com
       DEALABS_HOSTNAME_PORT: 587
-      DEALABS_MAIL_SENDER: exemple@gmail.com
-      DEALABS_MAIL_SENDER_PASSWORD: PasswordExemple
+      DEALABS_MAILINGLIST_PATH: ./mailinglist.txt

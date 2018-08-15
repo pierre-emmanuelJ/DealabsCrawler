@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"log"
 
 	mail "github.com/pierre-emmanuelJ/DealabsCrawler/mail"
 	"golang.org/x/net/html"
@@ -51,11 +52,11 @@ func getAllComments(doc *html.Node) error {
 }
 
 //TODO return error code to determine if program have to exit or continue !!!!!!!!
-func Crawler() {
+func Crawler(email, password string) {
 	nbComment := 0
 	url := os.Getenv("DEALABS_URL")
 	if url == "" {
-		fmt.Errorf("URL link is empty")
+		log.Println("URL link is empty")
 		return
 	}
 
@@ -69,21 +70,21 @@ func Crawler() {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("Failed to load page : %v", err)
+		log.Println("Failed to load page : %v", err)
 		return
 	}
 	bytes, _ := ioutil.ReadAll(resp.Body)
 
 	doc, _ := html.Parse(strings.NewReader(string(bytes)))
 	if err := getAllComments(doc); err != nil {
-		fmt.Errorf("failed to Getallcomment", err)
+		log.Println("failed to Getallcomment", err)
 		return
 	}
 
 	commentID := 0
 	last := len(AllComment) - 1
 	if last < 0 {
-		fmt.Errorf("No comments found in page")
+		log.Println("No comments found in page")
 		return
 	}
 
@@ -94,10 +95,11 @@ func Crawler() {
 
 	if nbComment < commentID {
 		os.Setenv("COMMENTID", strconv.FormatInt(int64(commentID), 10))
-		if err := mail.SendMail(&AllComment[last].body, commentID); err != nil {
-			fmt.Printf("Failed to send mail : %v", err)
+		if err := mail.SendMail(&AllComment[last].body, commentID, email, password); err != nil {
+			log.Println("Failed to send mail : %v\n", err)
 			return
 		}
+		fmt.Println("Success COMMENTID:", commentID, "sendend")
 	}
 	resp.Body.Close()
 	AllComment = nil
