@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
-	"log"
 
 	mail "github.com/pierre-emmanuelJ/DealabsCrawler/mail"
 	"golang.org/x/net/html"
@@ -99,7 +99,7 @@ func Crawler(email, password string) {
 			log.Println("Failed to send mail : %v\n", err)
 			return
 		}
-		fmt.Println("Success COMMENTID:", commentID, "sendend")
+		fmt.Println("Success COMMENTID:", commentID, "sent")
 	}
 	resp.Body.Close()
 	AllComment = nil
