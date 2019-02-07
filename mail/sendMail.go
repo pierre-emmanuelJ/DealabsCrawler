@@ -41,8 +41,6 @@ func SendMail(body *string, commentID int, email, password string) error {
 	file := string(dat)
 	file = strings.Trim(file, "\n")
 
-	log.Println(">", file, "<")
-
 	mails := strings.Split(file, "\n")
 
 	m := gomail.NewMessage()
