@@ -20,10 +20,8 @@ type Comment struct {
 	strID string
 }
 
-//TODO remove this global
 var AllComment []Comment
 
-//TODO check error
 func renderNode(n *html.Node) string {
 	var buf bytes.Buffer
 	w := io.Writer(&buf)
@@ -31,7 +29,6 @@ func renderNode(n *html.Node) string {
 	return buf.String()
 }
 
-//TODO check error
 func getAllComments(doc *html.Node) error {
 	var f func(*html.Node)
 	f = func(n *html.Node) {
@@ -51,12 +48,11 @@ func getAllComments(doc *html.Node) error {
 	return nil
 }
 
-//TODO return error code to determine if program have to exit or continue !!!!!!!!
 func Crawler(email, password string) {
 	nbComment := 0
 	url := os.Getenv("DEALABS_URL")
 	if url == "" {
-		log.Println("URL link is empty")
+		log.Println("env var DEALABS_URL is missing")
 		return
 	}
 

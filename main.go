@@ -31,7 +31,7 @@ func main() {
 	}
 
 	if *email == "" || *password == "" {
-		log.Fatalf("error: flag %q and %q musgt be set\n", "sender-mail", "sender-mail-password")
+		log.Fatalf("error: flag %q and %q must be set\n", "sender-mail", "sender-mail-password")
 	}
 
 	dealcrawler.AllComment = nil

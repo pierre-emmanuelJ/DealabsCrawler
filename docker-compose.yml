@@ -4,10 +4,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./mailinglist:/root/mailinglist
     container_name: "dealabs_crowler"
     restart: on-failure
     environment:
       DEALABS_URL: https://www.dealabs.com/discussions/le-topic-des-erreurs-de-prix-1056379?page=9999
       DEALABS_HOSTNAME: smtp.gmail.com
       DEALABS_HOSTNAME_PORT: 587
-      DEALABS_MAILINGLIST_PATH: ./mailinglist.txt
+      DEALABS_MAILINGLIST_FILENAME: mailinglist.txt
