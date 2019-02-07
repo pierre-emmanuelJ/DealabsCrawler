@@ -1,11 +1,14 @@
 package main
 
 import (
-	"time"
-	"github.com/spf13/pflag"
+	"fmt"
 	"log"
 	"os"
-	"fmt"
+	"time"
+
+	mail "github.com/pierre-emmanuelJ/DealabsCrawler/mail"
+
+	"github.com/spf13/pflag"
 
 	dealcrawler "github.com/pierre-emmanuelJ/DealabsCrawler/dealabsCrawler"
 )
@@ -17,7 +20,7 @@ func main() {
 	var email = docCmd.StringP("sender-mail", "m", "", "sender mail")
 	var password = docCmd.StringP("sender-mail-password", "p", "", "Sender password mail")
 	var help = docCmd.BoolP("help", "h", false, "Help about any command")
-	
+
 	if err := docCmd.Parse(os.Args); err != nil {
 		log.Fatal(err)
 	}
@@ -34,9 +37,17 @@ func main() {
 		log.Fatalf("error: flag %q and %q must be set\n", "sender-mail", "sender-mail-password")
 	}
 
-	dealcrawler.AllComment = nil
 	for {
-		dealcrawler.Crawler(*email, *password)
-		time.Sleep(10 * time.Second)
+		comment, err := dealcrawler.Crawler()
+		if err != nil {
+			log.Fatal(err)
+		}
+		if comment != nil {
+			if err := mail.SendMail(comment.Body, comment.StrID, *email, *password); err != nil {
+				log.Fatalf("Failed to send mail : %v", err)
+			}
+		}
+
+		time.Sleep(30 * time.Second)
 	}
 }

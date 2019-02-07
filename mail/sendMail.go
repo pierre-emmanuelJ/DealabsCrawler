@@ -3,15 +3,16 @@ package sendMail
 import (
 	"crypto/tls"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
-	"io/ioutil"
 
 	gomail "gopkg.in/gomail.v2"
 )
 
-func SendMail(body *string, commentID int, email, password string) error {
+//SendMail send email with comment
+func SendMail(body string, commentID string, email, password string) error {
 	url := os.Getenv("DEALABS_URL")
 	if url == "" {
 		return fmt.Errorf("env DEALABS_URL is missing")
@@ -33,7 +34,7 @@ func SendMail(body *string, commentID int, email, password string) error {
 	d := gomail.NewPlainDialer(mailHostName, port, email, password)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 
-	dat, err := ioutil.ReadFile("./mailinglist/"+mailingListFilename)
+	dat, err := ioutil.ReadFile("./mailinglist/" + mailingListFilename)
 	if err != nil {
 		return err
 	}
@@ -45,8 +46,8 @@ func SendMail(body *string, commentID int, email, password string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", email)
 	m.SetHeader("Bcc", mails...)
-	m.SetHeader("Subject", fmt.Sprintf("Comment no: %d", commentID))
-	m.SetBody("text/html", fmt.Sprintf("%s\n%s", url, *body))
+	m.SetHeader("Subject", fmt.Sprintf("Comment no: %s", commentID))
+	m.SetBody("text/html", fmt.Sprintf("%s\n%s", url, body))
 
 	return d.DialAndSend(m)
 }

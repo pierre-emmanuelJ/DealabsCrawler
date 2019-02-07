@@ -5,22 +5,19 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 
-	mail "github.com/pierre-emmanuelJ/DealabsCrawler/mail"
 	"golang.org/x/net/html"
 )
 
+//Comment represent a Dealabs page comment
 type Comment struct {
-	body  string
-	strID string
+	Body  string
+	StrID string
 }
-
-var AllComment []Comment
 
 func renderNode(n *html.Node) string {
 	var buf bytes.Buffer
@@ -29,14 +26,15 @@ func renderNode(n *html.Node) string {
 	return buf.String()
 }
 
-func getAllComments(doc *html.Node) error {
+func getAllComments(doc *html.Node) []Comment {
+	var allComment []Comment
 	var f func(*html.Node)
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "article" {
 			for _, a := range n.Attr {
 				if a.Key == "id" {
 					body := renderNode(n)
-					AllComment = append(AllComment, Comment{body: body, strID: a.Val})
+					allComment = append(allComment, Comment{Body: body, StrID: a.Val})
 				}
 			}
 		}
@@ -45,15 +43,15 @@ func getAllComments(doc *html.Node) error {
 		}
 	}
 	f(doc)
-	return nil
+	return allComment
 }
 
-func Crawler(email, password string) {
+//Crawler crawl DEALABS_URL page
+func Crawler() (*Comment, error) {
 	nbComment := 0
 	url := os.Getenv("DEALABS_URL")
 	if url == "" {
-		log.Println("env var DEALABS_URL is missing")
-		return
+		return nil, fmt.Errorf("env var DEALABS_URL is missing")
 	}
 
 	value := os.Getenv("COMMENTID")
@@ -66,37 +64,28 @@ func Crawler(email, password string) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Println("Failed to load page : %v", err)
-		return
+		return nil, fmt.Errorf("Failed to load page: %v", err)
 	}
 	bytes, _ := ioutil.ReadAll(resp.Body)
 
+	defer resp.Body.Close()
+
 	doc, _ := html.Parse(strings.NewReader(string(bytes)))
-	if err := getAllComments(doc); err != nil {
-		log.Println("failed to Getallcomment", err)
-		return
+	allComment := getAllComments(doc)
+	if len(allComment) == 0 {
+		return nil, fmt.Errorf("No comments found in page")
 	}
 
 	commentID := 0
-	last := len(AllComment) - 1
-	if last < 0 {
-		log.Println("No comments found in page")
-		return
-	}
-
-	if _, err := fmt.Sscanf(AllComment[last].strID, "comment-%d", &commentID); err != nil {
-		fmt.Println(err)
-		return
+	last := len(allComment) - 1
+	if _, err := fmt.Sscanf(allComment[last].StrID, "comment-%d", &commentID); err != nil {
+		return nil, err
 	}
 
 	if nbComment < commentID {
-		os.Setenv("COMMENTID", strconv.FormatInt(int64(commentID), 10))
-		if err := mail.SendMail(&AllComment[last].body, commentID, email, password); err != nil {
-			log.Println("Failed to send mail : %v\n", err)
-			return
-		}
-		fmt.Println("Success COMMENTID:", commentID, "sent")
+		strID := strconv.FormatInt(int64(commentID), 10)
+		os.Setenv("COMMENTID", strID)
+		return &Comment{Body: allComment[last].Body, StrID: strID}, nil
 	}
-	resp.Body.Close()
-	AllComment = nil
+	return nil, nil
 }
