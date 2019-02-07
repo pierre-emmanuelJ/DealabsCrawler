@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"io/ioutil"
-	"log"
 
 	gomail "gopkg.in/gomail.v2"
 )
