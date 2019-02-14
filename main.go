@@ -37,16 +37,18 @@ func main() {
 		log.Fatalf("error: flag %q and %q must be set\n", "sender-mail", "sender-mail-password")
 	}
 
+	firstRun := true
 	for {
 		comment, err := dealcrawler.Crawler()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if comment != nil {
+		if comment != nil && !firstRun {
 			if err := mail.SendMail(comment.Body, comment.StrID, *email, *password); err != nil {
 				log.Fatalf("Failed to send mail : %v", err)
 			}
 		}
+		firstRun = false
 
 		time.Sleep(30 * time.Second)
 	}
